@@ -1,0 +1,118 @@
+---
+title: "Linear Regression"
+author: "Simon-Pierre Boucher"
+date: "2023-02-11"
+categories: [news, code, analysis]
+image: "https://www.clipartmax.com/png/middle/124-1248944_the-future-of-ai-artificial-intelligence-logo.png"
+---
+
+This is a post with executable code.
+
+```{r}
+library(tidyverse)
+
+set.seed(123)  # ensures replication
+
+# predictors and target
+N = 100 # sample size
+k = 2   # number of desired predictors
+X = matrix(rnorm(N * k), ncol = k)  
+y = -.5 + .2*X[, 1] + .1*X[, 2] + rnorm(N, sd = .5)  # increasing N will get estimated values closer to these
+
+dfXy = data.frame(X, y)
+```
+
+```{r}
+lm_ml <- function(par, X, y) {
+  # par: parameters to be estimated
+  # X: predictor matrix with intercept column
+  # y: target
+  
+  # setup
+  beta   = par[-1]                             # coefficients
+  sigma2 = par[1]                              # error variance
+  sigma  = sqrt(sigma2)
+  N = nrow(X)
+  
+  # linear predictor
+  LP = X %*% beta                              # linear predictor
+  mu = LP                                      # identity link in the glm sense
+  
+  # calculate likelihood
+  L = dnorm(y, mean = mu, sd = sigma, log = TRUE) # log likelihood
+  # L =  -.5*N*log(sigma2) - .5*(1/sigma2)*crossprod(y-mu)    # alternate log likelihood form
+
+  -sum(L)                                      # optim by default is minimization, and we want to maximize the likelihood 
+                                               # (see also fnscale in optim.control)
+}
+```
+
+```{r}
+lm_ls <- function(par, X, y) {
+  # arguments- 
+  # par: parameters to be estimated
+  # X: predictor matrix with intercept column
+  # y: target
+  
+  # setup
+  beta = par                                   # coefficients
+  
+  # linear predictor
+  LP = X %*% beta                              # linear predictor
+  mu = LP                                      # identity link
+  
+  # calculate least squares loss function
+  L = crossprod(y - mu)
+}
+```
+
+```{r}
+X = cbind(1, X)
+```
+
+```{r}
+init = c(1, rep(0, ncol(X)))
+names(init) = c('sigma2', 'intercept', 'b1', 'b2')
+
+fit_ML = optim(
+  par = init,
+  fn  = lm_ml,
+  X   = X,
+  y   = y,
+  control = list(reltol = 1e-8)
+)
+
+fit_LS = optim(
+  par = init[-1],
+  fn  = lm_ls,
+  X   = X,
+  y   = y,
+  control = list(reltol = 1e-8)
+)
+
+pars_ML = fit_ML$par
+pars_LS = c(sigma2 = fit_LS$value / (N-k-1), fit_LS$par)  # calculate sigma2 and add
+```
+
+```{r}
+fit_lm = lm(y ~ ., dfXy)
+```
+
+```{r}
+fit_glm = glm(y ~ ., data = dfXy)
+summary(fit_glm)
+```
+
+```{r}
+coefs = solve(t(X) %*% X) %*% t(X) %*% y  # coefficients
+```
+
+```{r}
+sqrt(crossprod(y - X %*% coefs) / (N - k - 1))
+summary(fit_lm)$sigma
+sqrt(fit_glm$deviance / fit_glm$df.residual) 
+c(sqrt(pars_ML[1]), sqrt(pars_LS[1]))
+
+
+# rerun by adding 3-4 zeros to the N
+```

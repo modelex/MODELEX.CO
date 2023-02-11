@@ -1,0 +1,7 @@
+"0","cor(best$fit[,1], y)^2"
+"1","[1]"
+"1"," 0.7241967"
+"1","
+"
+"0","gam_comparison = gam(y~s(x0) + s(x1) + s(x2) + s(x3), data=d)"
+"0","gam.check(gam_comparison)"

@@ -1,0 +1,14 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/ELM/index.html",
+      "/posts/MIXED/index.html",
+      "/posts/neldermead/index.html",
+      "/posts/post-with-code/index.html",
+      "/posts/ridge/index.html",
+      "/posts/spline/index.html",
+      "/posts/welcome/index.html"
+    ]
+  }
+]

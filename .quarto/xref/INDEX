@@ -1,0 +1,29 @@
+{
+  "index.qmd": {
+    "index.html": "256fe3d3"
+  },
+  "about.qmd": {
+    "about.html": "5610d36a"
+  },
+  "posts/post-with-code/index.qmd": {
+    "index.html": "785c4cd9"
+  },
+  "posts/welcome/index.qmd": {
+    "index.html": "ebf16901"
+  },
+  "posts/MIXED/index.qmd": {
+    "index.html": "ae121e0f"
+  },
+  "posts/ridge/index.qmd": {
+    "index.html": "82182292"
+  },
+  "posts/neldermead/index.qmd": {
+    "index.html": "d832e1d2"
+  },
+  "posts/spline/index.qmd": {
+    "index.html": "d16b04ff"
+  },
+  "posts/ELM/index.qmd": {
+    "index.html": "cdef6b45"
+  }
+}
