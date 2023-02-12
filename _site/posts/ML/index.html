@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon-Pierre Boucher">
+<meta name="dcterms.date" content="2023-02-11">
+
+<title>MODELEX.CO - Maximum Likelihood</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MODELEX.CO</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Maximum Likelihood</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">code</div>
+                <div class="quarto-category">Maximum Likelihood</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Simon-Pierre Boucher </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 11, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for replication</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create the data</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>starting_values <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># the log likelihood function</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>simple_ll <span class="ot">&lt;-</span> <span class="cf">function</span>(mu, sigma, <span class="at">verbose =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  ll <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">dnorm</span>(y, <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (verbose)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="fu">paste</span>(mu, sigma, ll))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span>ll</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># using optim, and L-BFGS-B so as to constrain sigma to be positive by setting</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># the lower bound at zero</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>mlnorm <span class="ot">=</span> bbmle<span class="sc">::</span><span class="fu">mle2</span>(</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  simple_ll,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">start  =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">2</span>, <span class="at">sigma =</span> <span class="dv">1</span>),</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower  =</span> <span class="fu">c</span>(<span class="at">sigma =</span> <span class="dv">0</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">trace =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2 1 -7248.14586622016</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.001 1 -7245.19956062218</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.999 1 -7251.09317181815</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2 1.001 -7236.50591422399</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2 0.999 -7259.82279352312</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.24505468926297 1.96950925692859 -3049.97198996416</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.24605468926297 1.96950925692859 -3049.27560582155</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.24405468926297 1.96950925692859 -3050.66863190738</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.24505468926297 1.97050925692859 -3049.00497761794</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.24505468926297 1.96850925692859 -3050.94099240168</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.31318028766927 2.05892317065501 -2928.01832087456</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.31418028766927 2.05892317065501 -2927.39717837487</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.31218028766927 2.05892317065501 -2928.63969926979</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.31318028766927 2.05992317065501 -2927.25473617666</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.31318028766927 2.05792317065501 -2928.78349111668</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.77278505411265 2.432558187808 -2543.10404261981</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.77378505411265 2.432558187808 -2542.73672879512</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.77178505411265 2.432558187808 -2543.47152543937</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.77278505411265 2.433558187808 -2542.91093588634</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.77278505411265 2.431558187808 -2543.29772585115</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.28615824369724 2.62659417141057 -2372.55987588605</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.28715824369724 2.62659417141057 -2372.31923983875</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.28515824369724 2.62659417141057 -2372.80065688196</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.28615824369724 2.62759417141057 -2372.56920357348</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.28615824369724 2.62559417141057 -2372.55082760165</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.13268564260831 2.69838754293375 -2230.04880908758</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.13368564260831 2.69838754293375 -2229.93706798682</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.13168564260831 2.69838754293375 -2230.16068752655</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.13268564260831 2.69938754293375 -2230.18342905799</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.13268564260831 2.69738754293375 -2229.91431419597</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.97473678705946 2.51054560600106 -2154.81488384444</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.97573678705946 2.51054560600106 -2154.81939469868</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.97373678705946 2.51054560600106 -2154.81053164886</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.97473678705946 2.51154560600106 -2154.9620331563</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.97473678705946 2.50954560600106 -2154.66787609703</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.21489320377246 2.18947573207081 -2124.66864416274</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.21589320377246 2.18947573207081 -2124.72467223707</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.21389320377246 2.18947573207081 -2124.61282469102</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.21489320377246 2.19047573207081 -2124.73999169529</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.21489320377246 2.18847573207081 -2124.59761629464</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00995988321629 1.92622586907284 -2110.66941028985</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.01095988321629 1.92622586907284 -2110.68656617869</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00895988321629 1.92622586907284 -2110.65252391764</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00995988321629 1.92722586907284 -2110.6321552604</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00995988321629 1.92522586907284 -2110.70726284067</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.91335420165115 2.01962213907747 -2109.22254566271</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.91435420165115 2.01962213907747 -2109.21446710973</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.91235420165115 2.01962213907747 -2109.23086938141</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.91335420165115 2.02062213907747 -2109.23528509214</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.91335420165115 2.01862213907747 -2109.21027799159</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94651143156101 1.99717266850308 -2108.9227147788</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94751143156101 1.99717266850308 -2108.922766383</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94551143156101 1.99717266850308 -2108.92291388295</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94651143156101 1.99817266850308 -2108.9247147721</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94651143156101 1.99617266850308 -2108.92121357253</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94623334002317 1.9930802530799 -2108.91977119769</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94723334002317 1.9930802530799 -2108.91975300755</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94523334002317 1.9930802530799 -2108.92004112679</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94623334002317 1.9940802530799 -2108.91972198122</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94623334002317 1.9920802530799 -2108.92032434539</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94687250066485 1.99367860362636 -2108.91964064385</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94787250066485 1.99367860362636 -2108.91978326969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94587250066485 1.99367860362636 -2108.91974960589</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94687250066485 1.99467860362636 -2108.91989239182</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94687250066485 1.99267860362636 -2108.91989207136</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99367954739935 -2108.91964008206</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94780327041371 1.99367954739935 -2108.91976529029</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94580327041371 1.99367954739935 -2108.91976646146</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99467954739935 -2108.91989230487</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99267954739935 -2108.91989103353</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99367954739935 -2108.91964008206
+4.94680327041371 1.99367954739935 -2108.91964008206</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.44148359745509 1.99367954739935 -2139.70218265137</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.45212294337234 1.99367954739935 -2139.70276200931</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.1941434339344 1.99367954739935 -2116.61520330464</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.69946310689303 1.99367954739935 -2116.61549298362</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.07047335217406 1.99367954739935 -2110.84349467783</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.82313318865337 1.99367954739935 -2110.84363951732</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00863831129389 1.99367954739935 -2109.40058562607</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.88496822953354 1.99367954739935 -2109.40065804581</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 2.19304750213929 -2117.45310674386</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.79431159265942 -2120.84287722532</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 2.09336352476932 -2111.22462188457</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.89399557002938 -2111.64287508635</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 2.04352153608433 -2109.51949140477</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.94383755871437 -2109.57154503504</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 2.01860054174184 -2109.07270965763</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.96875855305686 -2109.07917960438</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.44148359745509 2.19304750213929 -2142.89322456974</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.45212294337234 1.79431159265942 -2158.8467314565</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.1941434339344 2.09336352476932 -2118.20472458079</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.69946310689303 1.89399557002938 -2120.1701359191</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.07047335217406 2.04352153608433 -2111.35064390521</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.82313318865337 1.94383755871437 -2111.5954760649</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5.00863831129389 2.01860054174184 -2109.54185330672</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.88496822953354 1.96875855305686 -2109.57245231197</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99367954739935 -2108.91964008206</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94729795074076 1.99367954739935 -2108.91967057521</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94630859008667 1.99367954739935 -2108.91967115457</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99387891535409 -2108.91965024903</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99348017944461 -2108.91964991504</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94705061057723 1.99367954739935 -2108.91964763293</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94655593025019 1.99367954739935 -2108.91964792261</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99377923137672 -2108.91964266618</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99357986342198 -2108.91964249793</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94692694049547 1.99367954739935 -2108.91964193357</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94667960033195 1.99367954739935 -2108.91964207841</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99372938938804 -2108.9196407492</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99362970541067 -2108.91964066492</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.9468651054546 1.99367954739935 -2108.91964052683</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94674143537283 1.99367954739935 -2108.91964059925</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99370446839369 -2108.91964025939</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.94680327041371 1.99365462640501 -2108.91964021723</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>mlnorm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+bbmle::mle2(minuslogl = simple_ll, start = list(mu = 2, sigma = 1), 
+    method = "L-BFGS-B", trace = TRUE, lower = c(sigma = 0))
+
+Coefficients:
+      mu    sigma 
+4.946803 1.993680 
+
+Log-likelihood: -2108.92 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare to an intercept only regression model</span></span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y<span class="sc">~</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ 1)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.7389 -1.2933 -0.0264  1.2848  6.4450 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  4.94681    0.06308   78.42   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.995 on 999 degrees of freedom</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for replication</span></span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a><span class="co"># predictor</span></span>
+<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)</span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a><span class="co"># coefficients for intercept and predictor</span></span>
+<span id="cb118-8"><a href="#cb118-8" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">2</span>)</span>
+<span id="cb118-9"><a href="#cb118-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-10"><a href="#cb118-10" aria-hidden="true" tabindex="-1"></a><span class="co"># add intercept to X and create y with some noise</span></span>
+<span id="cb118-11"><a href="#cb118-11" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">cbind</span>(<span class="dv">1</span>, X) <span class="sc">%*%</span> beta <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">sd =</span> <span class="fl">2.5</span>)</span>
+<span id="cb118-12"><a href="#cb118-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-13"><a href="#cb118-13" aria-hidden="true" tabindex="-1"></a>regression_ll <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">sigma =</span> <span class="dv">1</span>, <span class="at">Int =</span> <span class="dv">0</span>, <span class="at">b1 =</span> <span class="dv">0</span>) {</span>
+<span id="cb118-14"><a href="#cb118-14" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">=</span> <span class="fu">c</span>(Int, b1)</span>
+<span id="cb118-15"><a href="#cb118-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb118-16"><a href="#cb118-16" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">=</span> <span class="fu">cbind</span>(<span class="dv">1</span>,X)<span class="sc">%*%</span>coefs</span>
+<span id="cb118-17"><a href="#cb118-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb118-18"><a href="#cb118-18" aria-hidden="true" tabindex="-1"></a>  ll <span class="ot">=</span> <span class="sc">-</span><span class="fu">sum</span>(<span class="fu">dnorm</span>(y, <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb118-19"><a href="#cb118-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb118-20"><a href="#cb118-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="fu">paste</span>(sigma, Int, b1, ll))</span>
+<span id="cb118-21"><a href="#cb118-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb118-22"><a href="#cb118-22" aria-hidden="true" tabindex="-1"></a>  ll</span>
+<span id="cb118-23"><a href="#cb118-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb118-24"><a href="#cb118-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-25"><a href="#cb118-25" aria-hidden="true" tabindex="-1"></a>mlopt <span class="ot">=</span>  bbmle<span class="sc">::</span><span class="fu">mle2</span>(regression_ll, <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>, <span class="at">lower =</span> <span class="fu">c</span>(<span class="at">sigma =</span> <span class="dv">0</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 0 0 18604.1981758075</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.001 0 0 18569.8801419815</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>0.999 0 0 18638.6213213676</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 0.001 0 18599.2155996033</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 0 0 18604.1981758075</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 0 0.001 18602.2054290637</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 0 0 18604.1981758075</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9880300529133 0.143231031955916 0.0572842563449178 5874.27437077878</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9890300529133 0.143231031955916 0.0572842563449178 5870.48660201951</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9870300529133 0.143231031955916 0.0572842563449178 5878.06836613716</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9880300529133 0.144231031955916 0.0572842563449178 5873.04953625452</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9880300529133 0.142231031955916 0.0572842563449178 5875.49945832261</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9880300529133 0.143231031955916 0.0582842563449178 5873.78361577242</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1.9880300529133 0.143231031955916 0.0562842563449178 5874.7653773866</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11110658017379 0.185766269496337 0.0743312519780744 5397.7865967707</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11210658017379 0.185766269496337 0.0743312519780744 5394.72743863563</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11010658017379 0.185766269496337 0.0743312519780744 5400.85055430495</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11110658017379 0.186766269496337 0.0743312519780744 5396.70985602148</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11110658017379 0.184766269496337 0.0743312519780744 5398.86356189761</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11110658017379 0.185766269496337 0.0753312519780744 5397.35494502904</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.11110658017379 0.185766269496337 0.0733312519780744 5398.21847163247</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63883382213357 0.448124289511769 0.17969362765884 4073.30544842278</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63983382213357 0.448124289511769 0.17969362765884 4072.02997311015</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63783382213357 0.448124289511769 0.17969362765884 4074.5826619819</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63883382213357 0.449124289511769 0.17969362765884 4072.65358257869</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63883382213357 0.447124289511769 0.17969362765884 4073.95745787396</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63883382213357 0.448124289511769 0.18069362765884 4073.04322485671</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.63883382213357 0.448124289511769 0.17869362765884 4073.56781479106</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04089183158435 0.7613343171553 0.305922193305561 3503.11416657998</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04189183158435 0.7613343171553 0.305922193305561 3502.47528743065</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.03989183158435 0.7613343171553 0.305922193305561 3503.75389272083</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04089183158435 0.7623343171553 0.305922193305561 3502.65678927044</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04089183158435 0.7603343171553 0.305922193305561 3503.57165203243</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04089183158435 0.7613343171553 0.306922193305561 3502.92937321464</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.04089183158435 0.7613343171553 0.304922193305561 3503.29906748211</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50548673156963 1.32656376978785 0.534912398361948 3069.39135271974</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50648673156963 1.32656376978785 0.534912398361948 3069.16552876523</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50448673156963 1.32656376978785 0.534912398361948 3069.6175328417</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50548673156963 1.32756376978785 0.534912398361948 3069.09267848316</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50548673156963 1.32556376978785 0.534912398361948 3069.69010833363</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50548673156963 1.32656376978785 0.535912398361948 3069.26960287954</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.50548673156963 1.32656376978785 0.533912398361948 3069.51318348116</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87501696536827 2.13425733522368 0.86492142510714 2801.36548299892</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87601696536827 2.13425733522368 0.86492142510714 2801.35116711562</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87401696536827 2.13425733522368 0.86492142510714 2801.37994321472</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87501696536827 2.13525733522368 0.86492142510714 2801.17426230608</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87501696536827 2.13325733522368 0.86492142510714 2801.55677028847</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87501696536827 2.13425733522368 0.86592142510714 2801.28627032369</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.87501696536827 2.13425733522368 0.86392142510714 2801.4447618976</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0541874807185 3.31772092855976 1.355047412012 2607.61146017698</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0551874807185 3.31772092855976 1.355047412012 2607.71561055239</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0531874807185 3.31772092855976 1.355047412012 2607.50735443021</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0541874807185 3.31872092855976 1.355047412012 2607.50797693215</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0541874807185 3.31672092855976 1.355047412012 2607.71500426224</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0541874807185 3.31772092855976 1.356047412012 2607.56683151831</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4.0541874807185 3.31772092855976 1.354047412012 2607.65614933509</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83578971002779 4.79796763903706 1.98369021762435 2469.67379037265</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83678971002779 4.79796763903706 1.98369021762435 2469.82690386735</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83478971002779 4.79796763903706 1.98369021762435 2469.52069306467</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83578971002779 4.79896763903706 1.98369021762435 2469.65765738742</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83578971002779 4.79696763903706 1.98369021762435 2469.68999132369</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83578971002779 4.79796763903706 1.98469021762435 2469.6637459055</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.83578971002779 4.79796763903706 1.98269021762435 2469.68390242468</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1597405623082 5.73530101810177 2.41580240215036 2397.00939282354</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1607405623082 5.73530101810177 2.41580240215036 2397.11857609438</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1587405623082 5.73530101810177 2.41580240215036 2396.9003062564</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1597405623082 5.73630101810177 2.41580240215036 2397.07835055202</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1597405623082 5.73430101810177 2.41580240215036 2396.94053525572</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1597405623082 5.73530101810177 2.41680240215036 2397.03513138541</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>3.1597405623082 5.73530101810177 2.41480240215036 2396.98375386095</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60769965863193 5.46205588723569 2.333699479299 2333.51800275284</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60869965863193 5.46205588723569 2.333699479299 2333.55179145289</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60669965863193 5.46205588723569 2.333699479299 2333.48446944127</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60769965863193 5.46305588723569 2.333699479299 2333.57938566806</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60769965863193 5.46105588723569 2.333699479299 2333.45676689434</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60769965863193 5.46205588723569 2.334699479299 2333.54485495317</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.60769965863193 5.46205588723569 2.332699479299 2333.49129678502</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20908317935263 4.41732563868732 1.8843877657646 2370.90331720084</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.21008317935263 4.41732563868732 1.8843877657646 2370.75931820755</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20808317935263 4.41732563868732 1.8843877657646 2371.0479219923</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20908317935263 4.41832563868732 1.8843877657646 2370.7772180429</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20908317935263 4.41632563868732 1.8843877657646 2371.02962127476</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20908317935263 4.41732563868732 1.8853877657646 2370.85487322291</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.20908317935263 4.41732563868732 1.8833877657646 2370.95196494626</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45550036900126 5.06315817489771 2.16214379312588 2314.23172079198</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45650036900126 5.06315817489771 2.16214379312588 2314.23435895171</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45450036900126 5.06315817489771 2.16214379312588 2314.2294113133</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45550036900126 5.06415817489771 2.16214379312588 2314.23554782014</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45550036900126 5.06215817489771 2.16214379312588 2314.22805961554</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45550036900126 5.06315817489771 2.16314379312588 2314.23547119379</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45550036900126 5.06315817489771 2.16114379312588 2314.22813531234</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44340650845624 5.03664444038764 2.13636232105316 2314.14146131506</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44440650845624 5.03664444038764 2.13636232105316 2314.14014827181</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44240650845624 5.03664444038764 2.13636232105316 2314.14311117237</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44340650845624 5.03764444038764 2.13636232105316 2314.14100019054</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44340650845624 5.03564444038764 2.13636232105316 2314.14208993715</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44340650845624 5.03664444038764 2.13736232105316 2314.14107292127</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44340650845624 5.03664444038764 2.13536232105316 2314.14201626764</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45028282535464 5.03866993984521 2.13844911087289 2314.13780826926</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45128282535464 5.03866993984521 2.13844911087289 2314.13879385892</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44928282535464 5.03866993984521 2.13844911087289 2314.13715479378</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45028282535464 5.03966993984521 2.13844911087289 2314.13767784953</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45028282535464 5.03766993984521 2.13844911087289 2314.13810524778</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45028282535464 5.03866993984521 2.13944911087289 2314.13775870453</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.45028282535464 5.03866993984521 2.13744911087289 2314.13802345927</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44762453680172 5.04073025686143 2.1399465597729 2314.13669176168</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44862453680172 5.04073025686143 2.1399465597729 2314.13679309145</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44662453680172 5.04073025686143 2.1399465597729 2314.13692435388</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44762453680172 5.04173025686143 2.1399465597729 2314.13689832011</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44762453680172 5.03973025686143 2.1399465597729 2314.13665212402</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44762453680172 5.04073025686143 2.1409465597729 2314.13688149659</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44762453680172 5.04073025686143 2.1389465597729 2314.13666801199</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44780022941175 5.03993567558159 2.13925736768767 2314.13660372081</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44880022941175 5.03993567558159 2.13925736768767 2314.1367637145</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44680022941175 5.03993567558159 2.13925736768767 2314.13677752921</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44780022941175 5.04093567558159 2.13925736768767 2314.13668069582</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44780022941175 5.03893567558159 2.13925736768767 2314.13669364261</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44780022941175 5.03993567558159 2.14025736768767 2314.13668257634</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44780022941175 5.03993567558159 2.13825736768767 2314.13669082668</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13928362353337 2314.13660347139</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44882290067489 5.03997575794523 2.13928362353337 2314.13677102504</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44682290067489 5.03997575794523 2.13928362353337 2314.13676970437</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.04097575794523 2.13928362353337 2314.13668701793</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03897575794523 2.13928362353337 2314.13668681859</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.14028362353337 2314.13668650492</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13828362353337 2314.1366863962</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13928362353337 2314.13660347139
+2.44782290067489 5.03997575794523 2.13928362353337 2314.13660347139</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.69260519074238 5.03997575794523 2.13928362353337 2322.67008817396</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.2030406106074 5.03997575794523 2.13928362353337 2326.05981623152</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.57021404570863 5.03997575794523 2.13928362353337 2316.44159493811</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.32543175564115 5.03997575794523 2.13928362353337 2316.85982724572</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.50901847319176 5.03997575794523 2.13928362353337 2314.73645980295</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.38662732815802 5.03997575794523 2.13928362353337 2314.78850302531</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.47842068693333 5.03997575794523 2.13928362353337 2314.28967559777</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.41722511441645 5.03997575794523 2.13928362353337 2314.29614034544</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.54397333373976 2.13928362353337 2335.33328825995</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.53597818215071 2.13928362353337 2335.33318779151</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.29197454584249 2.13928362353337 2319.43578722709</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.78797697004797 2.13928362353337 2319.43573699287</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.16597515189386 2.13928362353337 2315.46140568959</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.9139763639966 2.13928362353337 2315.46138057248</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.10297545491955 2.13928362353337 2314.46780716558</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.97697606097092 2.13928362353337 2314.46779460703</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.3532119858867 2317.93418520727</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 1.92535526118003 2317.93416194984</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.24624780471003 2315.08600181254</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.0323194423567 2315.08599018383</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.1927657141217 2314.37395451027</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.08580153294503 2314.37394869591</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.16602466882753 2314.19594195791</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.1125425782392 2314.19593905073</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.69260519074238 5.54397333373976 2.13928362353337 2340.18800948682</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.2030406106074 4.53597818215071 2.13928362353337 2352.22843884896</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.57021404570863 5.29197454584249 2.13928362353337 2321.24811081629</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.32543175564115 4.78797697004797 2.13928362353337 2322.731443336</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.50901847319176 5.16597515189386 2.13928362353337 2315.99742562634</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.38662732815802 4.9139763639966 2.13928362353337 2316.18208840449</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.47842068693333 5.10297545491955 2.13928362353337 2314.61275190364</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.41722511441645 4.97697606097092 2.13928362353337 2314.63576913378</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.69260519074238 5.03997575794523 2.3532119858867 2325.80858547634</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.2030406106074 5.03997575794523 1.92535526118003 2330.74816003208</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.57021404570863 5.03997575794523 2.24624780471003 2317.30272722033</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.32543175564115 5.03997575794523 2.0323194423567 2317.91177928166</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.50901847319176 5.03997575794523 2.1927657141217 2314.96237393871</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.38662732815802 5.03997575794523 2.08580153294503 2315.03817584531</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.47842068693333 5.03997575794523 2.16602466882753 2314.34755798059</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.41722511441645 5.03997575794523 2.1125425782392 2314.35698759872</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.54397333373976 2.3532119858867 2338.65226992061</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.53597818215071 1.92535526118003 2338.65214619474</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.29197454584249 2.24624780471003 2320.26553554943</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.78797697004797 2.0323194423567 2320.2654736865</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.16597515189386 2.1927657141217 2315.66884422377</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.9139763639966 2.08580153294503 2315.6688132923</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.10297545491955 2.16602466882753 2314.51966752592</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 4.97697606097092 2.1125425782392 2314.51965206019</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13928362353337 2314.13660347139</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44806768296496 5.03997575794523 2.13928362353337 2314.13661365915</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44757811838482 5.03997575794523 2.13928362353337 2314.13661328358</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.04047975552103 2.13928362353337 2314.13662471826</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03947176036944 2.13928362353337 2314.13662461779</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13949755189572 2314.13660728059</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13906969517101 2314.13660725733</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44794529181992 5.03997575794523 2.13928362353337 2314.1366060659</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44770050952986 5.03997575794523 2.13928362353337 2314.13660587687</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.04022775673313 2.13928362353337 2314.13660879567</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03972375915734 2.13928362353337 2314.13660874543</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13939058771454 2314.1366044266</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13917665935219 2314.13660441497</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44788409624741 5.03997575794523 2.13928362353337 2314.13660414373</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44776170510237 5.03997575794523 2.13928362353337 2314.13660404905</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.04010175733918 2.13928362353337 2314.13660480874</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03984975855128 2.13928362353337 2314.13660478362</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13933710562395 2314.13660371165</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13923014144278 2314.13660370583</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44785349846115 5.03997575794523 2.13928362353337 2314.13660365132</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44779230288863 5.03997575794523 2.13928362353337 2314.13660360396</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.04003875764221 2.13928362353337 2314.13660380887</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03991275824826 2.13928362353337 2314.13660379631</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13931036457866 2314.13660353218</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2.44782290067489 5.03997575794523 2.13925688248807 2314.13660352928</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb319"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb319-1"><a href="#cb319-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mlopt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length  Class   Mode 
+     1   mle2     S4 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb321"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb321-1"><a href="#cb321-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(profile(mlopt), absVal=F)</span></span>
+<span id="cb321-2"><a href="#cb321-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-3"><a href="#cb321-3" aria-hidden="true" tabindex="-1"></a>modlm <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> X)</span>
+<span id="cb321-4"><a href="#cb321-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ X)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.9152 -1.6097  0.0363  1.6343  7.6711 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  5.03998    0.07751   65.02   &lt;2e-16 ***
+X            2.13928    0.07773   27.52   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.45 on 998 degrees of freedom
+Multiple R-squared:  0.4315,    Adjusted R-squared:  0.4309 
+F-statistic: 757.5 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb323"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb323-1"><a href="#cb323-1" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">logLik</span>(modlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'log Lik.' 4628.273 (df=3)</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

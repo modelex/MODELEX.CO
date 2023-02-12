@@ -25,5 +25,29 @@
   },
   "posts/ELM/index.qmd": {
     "index.html": "cdef6b45"
+  },
+  "posts/SGD/index.qmd": {
+    "index.html": "8f1efccb"
+  },
+  "posts/LASSO/index.qmd": {
+    "index.html": "56d1255c"
+  },
+  "posts/Logistic/index.qmd": {
+    "index.html": "b5fd5758"
+  },
+  "posts/LR/index.qmd": {
+    "index.html": "025163dd"
+  },
+  "posts/ML/index.qmd": {
+    "index.html": "a5f42562"
+  },
+  "posts/BNN/index.qmd": {
+    "index.html": "eefc4e07"
+  },
+  "posts/GD/index.qmd": {
+    "index.html": "f6a5a20a"
+  },
+  "posts/GP/index.qmd": {
+    "index.html": "7e16c4b2"
   }
 }

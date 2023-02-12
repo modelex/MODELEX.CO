@@ -1,0 +1,77 @@
+---
+title: "Maximum Likelihood"
+author: "Simon-Pierre Boucher"
+date: "2023-02-11"
+categories: [R, code, Maximum Likelihood]
+image: "https://www.clipartmax.com/png/middle/124-1248944_the-future-of-ai-artificial-intelligence-logo.png"
+---
+
+```{r}
+# for replication
+set.seed(1234)
+
+# create the data
+y = rnorm(1000, mean = 5, sd = 2)
+starting_values = c(0, 1)
+
+# the log likelihood function
+simple_ll <- function(mu, sigma, verbose = TRUE) {
+  
+  ll = sum(dnorm(y, mean = mu, sd = sigma, log = TRUE))
+  
+  if (verbose)
+    message(paste(mu, sigma, ll))
+  
+  -ll
+}
+
+# using optim, and L-BFGS-B so as to constrain sigma to be positive by setting
+# the lower bound at zero
+mlnorm = bbmle::mle2(
+  simple_ll,
+  start  = list(mu = 2, sigma = 1),
+  method = "L-BFGS-B",
+  lower  = c(sigma = 0),
+  trace = TRUE
+)
+
+mlnorm
+
+# compare to an intercept only regression model
+summary(lm(y~1))
+
+# for replication
+set.seed(1234)
+
+# predictor
+X = rnorm(1000)
+
+# coefficients for intercept and predictor
+beta = c(5, 2)
+
+# add intercept to X and create y with some noise
+y = cbind(1, X) %*% beta + rnorm(1000, sd = 2.5)
+
+regression_ll <- function(sigma = 1, Int = 0, b1 = 0) {
+  coefs = c(Int, b1)
+  
+  mu = cbind(1,X)%*%coefs
+  
+  ll = -sum(dnorm(y, mean = mu, sd = sigma, log = TRUE))
+  
+  message(paste(sigma, Int, b1, ll))
+  
+  ll
+}
+
+mlopt =  bbmle::mle2(regression_ll, method = "L-BFGS-B", lower = c(sigma = 0)) 
+
+summary(mlopt)
+
+# plot(profile(mlopt), absVal=F)
+
+modlm = lm(y ~ X)
+summary(modlm)
+- 2 * logLik(modlm)
+
+```

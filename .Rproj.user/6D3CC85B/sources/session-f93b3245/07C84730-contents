@@ -1,0 +1,261 @@
+---
+title: "Basic Neural Network"
+author: "Simon-Pierre Boucher"
+date: "2023-02-11"
+categories: [R, code, Basic Neural Network, Neural Network]
+image: "https://www.clipartmax.com/png/middle/124-1248944_the-future-of-ai-artificial-intelligence-logo.png"
+---
+
+```{r}
+X = matrix( 
+  c(0, 0, 1, 
+    0, 1, 1, 
+    1, 0, 1, 
+    1, 1, 1),
+  nrow  = 4,
+  ncol  = 3,
+  byrow = TRUE
+)
+
+# output dataset            
+y = c(0, 0, 1, 1)
+
+# seed random numbers to make calculation
+# deterministic (just a good practice)
+set.seed(1)
+
+# initialize weights randomly with mean 0
+synapse_0 = matrix(runif(3, min = -1, max = 1), 3, 1)
+
+# sigmoid function
+nonlin <- function(x, deriv = FALSE) {
+  if (deriv)
+    x * (1 - x)
+  else
+    plogis(x)
+}
+
+
+nn_1 <- function(X, y, synapse_0, maxiter = 10000) {
+  
+  for (iter in 1:maxiter) {
+  
+      # forward propagation
+      layer_0 = X
+      layer_1 = nonlin(layer_0 %*% synapse_0)
+  
+      # how much did we miss?
+      layer_1_error = y - layer_1
+  
+      # multiply how much we missed by the 
+      # slope of the sigmoid at the values in layer_1
+      l1_delta = layer_1_error * nonlin(layer_1, deriv = TRUE)
+  
+      # update weights
+      synapse_0 = synapse_0 + crossprod(layer_0, l1_delta)
+  }
+  
+  list(layer_1 = layer_1, layer_1_error = layer_1_error, synapse_0 = synapse_0)
+}
+
+fit_nn = nn_1(X, y, synapse_0)
+
+message("Output After Training: \n", 
+        paste0(capture.output(cbind(fit_nn$layer_1, y)), collapse = '\n'))
+```
+
+```{r}
+X = matrix(
+  c(0, 0, 1,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 1),
+  nrow = 4,
+  ncol = 3,
+  byrow = TRUE
+)
+
+y = matrix(as.integer(xor(X[,1], X[,2])), ncol = 1)  # make the relationship explicit
+
+set.seed(1)
+
+# or do randomly in same fashion
+synapse_0 = matrix(runif(12, -1, 1), 3, 4)
+synapse_1 = matrix(runif(12, -1, 1), 4, 1)
+
+# synapse_0
+# synapse_1
+
+nn_2 <- function(
+  X,
+  y,
+  synapse_0_start,
+  synapse_1_start,
+  maxiter = 30000,
+  verbose = TRUE
+) {
+    
+  synapse_0 = synapse_0_start
+  synapse_1 = synapse_1_start
+  
+  for (j in 1:maxiter) {
+    layer_1 = plogis(X  %*% synapse_0)              # 4 x 4
+    layer_2 = plogis(layer_1 %*% synapse_1)         # 4 x 1
+    
+    # how much did we miss the target value?
+    layer_2_error = y - layer_2
+    
+    if (verbose && (j %% 10000) == 0) {
+      message(glue::glue("Error: {mean(abs(layer_2_error))}"))
+    }
+  
+    # in what direction is the target value?
+    # were we really sure? if so, don't change too much.
+    layer_2_delta = (y - layer_2) * (layer_2 * (1 - layer_2))
+    
+    # how much did each l1 value contribute to the l2 error (according to the weights)?
+    layer_1_error = layer_2_delta %*% t(synapse_1)
+    
+    # in what direction is the target l1?
+    # were we really sure? if so, don't change too much.  
+    layer_1_delta = tcrossprod(layer_2_delta, synapse_1) * (layer_1 * (1 - layer_1))
+    
+    # update
+    synapse_1 = synapse_1 + crossprod(layer_1, layer_2_delta)
+    synapse_0 = synapse_0 + crossprod(X, layer_1_delta)
+  }
+  
+  list(
+    layer_1_error = layer_1_error,
+    layer_2_error = layer_2_error,
+    synapse_0 = synapse_0,
+    synapse_1 = synapse_1,
+    layer_1 = layer_1,
+    layer_2 = layer_2
+  )
+}
+
+fit_nn = nn_2(
+  X,
+  y,
+  synapse_0_start = synapse_0,
+  synapse_1_start = synapse_1,
+  maxiter = 30000
+)
+glue::glue('Final error: {round(mean(abs(fit_nn$layer_2_error)), 5)}')
+round(fit_nn$layer_1, 3)
+round(cbind(fit_nn$layer_2, y), 3)
+round(fit_nn$synapse_0, 3)
+round(fit_nn$synapse_1, 3)
+```
+
+```{r}
+# input dataset
+X = matrix(
+  c(0, 0, 1,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 1),
+  nrow = 4,
+  ncol = 3,
+  byrow = TRUE
+)
+    
+# output dataset            
+y = matrix(c(0, 1, 1, 0), ncol = 1)
+
+alphas = c(0.001, 0.01, 0.1, 1, 10, 100, 1000)
+hidden_size = 32
+
+# compute sigmoid nonlinearity
+sigmoid = plogis # already part of base R, no function needed
+
+# convert output of sigmoid function to its derivative
+sigmoid_output_to_derivative <- function(output) {
+  output * (1 - output)
+}
+
+
+nn_3 <- function(
+  X,
+  y,
+  hidden_size,
+  alpha,
+  maxiter = 30000,
+  show_messages = FALSE
+) {
+    
+  for (val in alpha) {
+    
+    if(show_messages)
+      message(glue::glue("Training With Alpha: {val}"))
+    
+    set.seed(1)
+    
+    # randomly initialize our weights with mean 0
+    synapse_0 = matrix(runif(3 * hidden_size, -1, 1), 3, hidden_size)
+    synapse_1 = matrix(runif(hidden_size), hidden_size, 1)
+  
+    for (j in 1:maxiter) {
+  
+        # Feed forward through layers input, 1, and 2
+        layer_1 = sigmoid(X %*% synapse_0)
+        layer_2 = sigmoid(layer_1 %*% synapse_1)
+  
+        # how much did we miss the target value?
+        layer_2_error = layer_2 - y
+        
+        if ((j %% 10000) == 0 & show_messages) {
+          message(glue::glue("Error after {j} iterations: {mean(abs(layer_2_error))}"))
+        }
+  
+        # in what direction is the target value?
+        # were we really sure? if so, don't change too much.
+        layer_2_delta = layer_2_error * sigmoid_output_to_derivative(layer_2)
+  
+        # how much did each l1 value contribute to the l2 error (according to the weights)?
+        layer_1_error = layer_2_delta %*% t(synapse_1)
+  
+        # in what direction is the target l1?
+        # were we really sure? if so, don't change too much.
+        layer_1_delta = layer_1_error * sigmoid_output_to_derivative(layer_1)
+  
+        synapse_1 = synapse_1 - val * crossprod(layer_1, layer_2_delta)
+        synapse_0 = synapse_0 - val * crossprod(X, layer_1_delta)
+    }
+  }
+  
+  list(
+    layer_1_error = layer_1_error,
+    layer_2_error = layer_2_error,
+    synapse_0 = synapse_0,
+    synapse_1 = synapse_1,
+    layer_1 = layer_1,
+    layer_2 = layer_2
+  )
+}
+
+set.seed(1)
+
+fit_nn = nn_3(
+  X,
+  y,
+  hidden_size = 32,
+  maxiter = 30000,
+  alpha   = alphas,
+  show_messages = FALSE
+)
+
+set.seed(1)
+
+fit_nn = nn_3(
+  X,
+  y,
+  hidden_size = 32,
+  alpha = 10,
+  show_messages = TRUE
+)
+
+cbind(round(fit_nn$layer_2, 4), y)
+cbind(round(fit_nn$layer_2, 4), y)
+```

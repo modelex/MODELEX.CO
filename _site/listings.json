@@ -1,0 +1,19 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/BNN/index.html",
+      "/posts/ELM/index.html",
+      "/posts/GD/index.html",
+      "/posts/GP/index.html",
+      "/posts/LASSO/index.html",
+      "/posts/Logistic/index.html",
+      "/posts/LR/index.html",
+      "/posts/ML/index.html",
+      "/posts/neldermead/index.html",
+      "/posts/ridge/index.html",
+      "/posts/SGD/index.html",
+      "/posts/spline/index.html"
+    ]
+  }
+]
